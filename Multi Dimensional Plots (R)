@@ -1,0 +1,77 @@
+fname<-file.choose()
+fname
+art<-read.csv(fname,header=TRUE,stringsAsFactors = FALSE)
+View(art)
+par(mfrow=c(2,3))
+par('mfrow')
+# 1.What are the distributions of total sales for water color and drawing papers?
+boxplot(art$total.sale ~ art$paper,main='Distribution of Total Sales across Different Category',xlab='Category',ylab='Sales')
+
+# 2. Are total sales growing for each store over the years covered in the dataset?
+M<-tapply(art$total.sale,list(art$store,art$year), sum)
+x<-as.numeric(colnames(M))
+x
+M
+plot(x,M[1,],type='l',lwd=3,col='red',ylim = c(0,max(M)),xlab = 'Year',ylab = 'Total Sales',main='Trend for different stores')
+text(x=x[1],y=M[1,1]+500,rownames(M)[1])
+lines(x,M[2,],lwd=3,col='blue')
+text(x=x[1],y=M[2,2]-800,rownames(M)[2])
+lines(x,M[3,],lwd=3,col='yellow')
+text(x=x[1],y=M[3,3]-2000,rownames(M)[3])
+lines(x,M[4,],lwd=3,col='green')
+text(x=x[1],y=M[4,4]-1000,rownames(M)[4])
+
+# 3. How do the total units sold of water color and drawing paper differ by store?
+units.by.paper.store<-tapply(art$units.sold,list(art$paper,art$store),FUN=sum)
+units.by.paper.store
+barplot(units.by.paper.store,beside=T,col=c('orange','black'),ylab='Number of Units Sold',xlab='Stores',main='Total units sold by store')
+legend.text = c('Drawing paper', 'Watercolor')
+legend('topleft', legend.text, pch = 0, col = c('orange', 'black'),cex = 0.5)
+# The sale of watercolor paper is always greater than drawing paper which is clearly observed by the barplot obtained.
+
+
+
+# 4. Each paper (watercolor and drawing) has different subtypes. For watercolor only, how are the total
+# sales of the different paper types (column is paper.type) similar or different for each store? 
+art.watercolor=art[art$paper=='watercolor',]
+art.watercolor
+N<-tapply(art.watercolor$total.sale,list(art.watercolor$paper.type,art.watercolor$store), sum)
+N
+barplot(N,beside=T,col=c('orange','black','green','magenta'),ylab='Number of Units Sold',xlab='Stores',main='Watercolor Subtype Sales')
+legend.text = c('block','pad','roll','sheet')
+legend("topleft", legend.text, pch = 0, col = c('orange','black','green','magenta'),cex = 0.75)
+
+# 5. In the Davenport store, do the sales representatives (column is 'rep') tend to sell the same amounts
+# (units) of water color and drawing paper?
+art_Davenport=art[art$store=='Davenport',]
+art_Davenport
+G<-tapply(art_Davenport$units.sold,list(art_Davenport$paper,art_Davenport$rep), sum)
+G
+barplot(G,beside=T,col=c('orange','black'),ylab='Number of Units Sold',xlab='Stores',main = 'Davenport Store Sales')
+legend.text = c('Drawing paper', 'Watercolor')
+legend('topleft', legend.text, pch = 0, col = c('orange', 'black'),cex = 0.75)
+
+# 6. Over the years, does the ratio of units sold for water color and drawing paper stay the same? Is one
+# growing while the other stays constant? 
+art.watercolor.subset<-art[art$paper=='watercolor',]
+art.drawing.subset<-art[art$paper=='drawing',]
+Watercolor_paper<-aggregate(art.watercolor.subset$units.sold,list(art.watercolor.subset$year), sum)
+Watercolor_paper
+drawing_paper<-aggregate(art.drawing.subset$units.sold,list(art.drawing.subset$year), sum)
+drawing_paper
+tot<-aggregate(art$units.sold,list(art$year), sum)
+tot
+Watercolor_paper[, "ratio_Watercolor"] <- Watercolor_paper[, "x"] /tot[, "x"]
+Watercolor_paper
+drawing_paper[, "ratio_drawing"] <- drawing_paper[, "x"] / tot[, "x"]
+drawing_paper
+subset <- t(data.frame(Watercolor_paper$ratio_Watercolor, drawing_paper$ratio_drawing))
+barplot(subset,names.arg=Watercolor_paper$Group.1, beside=TRUE,col = c('orange','black')
+        ,xlab='Year',ylab='Ratio of Units Sold',main='Distributions of Ratios')
+legend.text =  c("Ratio of Watercolor", "Ratio of Drawing")
+legend(7.6,.72,legend.text,pch = 19, col = c("orange", "black"),cex = 0.5)
+
+# As we can see from the graph there is no definite trend for the ratio of units sold but the ratio is always higher for water color paper
+# than drawing paper.
+
+
