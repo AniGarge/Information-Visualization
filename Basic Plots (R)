@@ -1,0 +1,50 @@
+fname<-file.choose()
+fname
+art<-read.csv(fname,header=TRUE,stringsAsFactors = FALSE)
+View(art)
+
+# 1. Which sales representative helped the highest number of customers
+par(mfrow=c(1,1))
+cust_count<-sort(table(art$rep))
+cust_count
+
+fill_colors<-c()
+for ( i in 1:length(art$store) ) {
+  if (art$store[i] == "Syracuse") {
+    fill_colors <- c(fill_colors, "orange")
+  } else {
+    fill_colors <- c(fill_colors, "black")
+  }
+}
+# Yunzhu helped the highest number of customers.
+
+unique(art$rep[art$store=='Syracuse'])
+
+barplot(cust_count,xlab='Employee',col=fill_colors)
+
+
+# 2. How do sales of watercolor and drawing paper differ across the stores? 
+units.by.paper.store<-tapply(art$units.sold,list(art$paper,art$store),FUN=sum)
+units.by.paper.store
+barplot(units.by.paper.store,beside=T,col=c('orange','black'),ylab='Units Sold',xlab='Store')
+legend.text = c('Drawing paper', 'Watercolor')
+legend("topright", legend.text, pch = 0, col = c('orange', 'black'))
+
+
+# 3.What is the distribution of total sales across the stores?
+boxplot(art$total.sale ~ art$store,main='Boxplot Distribution of Total Sales across Different Stores',xlab='Store Locations',ylab='Sale')
+ 
+# 4. How does the distribution of total sales of drawing paper compare to that of watercolor?
+par(mfrow=c(1,2))
+par('mfrow')
+art.drawing<-art[art$paper=='drawing',]
+art.watercolor<-art[art$paper=='watercolor',]
+boxplot(art.drawing$total.sale,main='Boxplot Distribution for drawing paper',ylab='Sale')
+boxplot(art.watercolor$total.sale,main='Boxplot Distribution for watercolor',ylab='Sale')
+
+# 5. What was the number of customers in all stores across the years?
+par(mfrow=c(1,1))
+par('mfrow')
+customers_per_year=aggregate(art$year,list(art$year),FUN=length)
+customers_per_year
+plot(customers_per_year$Group.1,customers_per_year$x,type='s',xlab='Year',ylab = 'Customers',main = 'Step Chart for customers across years')
