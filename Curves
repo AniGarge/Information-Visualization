@@ -1,0 +1,58 @@
+fname<-file.choose()
+fname
+crime<-read.csv(fname,header=T,stringsAsFactors = F)
+
+
+#ScatterPlot
+crime2 <- crime[crime$state != "District of Columbia",]
+crime2 <- crime[crime$state != "United States",]
+
+plot(crime2$murder, crime2$burglary, xlim=c(0,10), ylim=c(0, 1200),col='blue',pch=19)
+
+scatter.smooth(crime2$murder, crime2$burglary,
+               xlim=c(0,10), ylim=c(0, 1200))
+
+pairs(crime2[,2:9], panel=panel.smooth,pch=19)
+
+#BubblePlot
+radius <- sqrt( crime$population/ pi )
+symbols(crime$murder, crime$burglary, circles=radius, inches=0.35,
+        fg="white", bg="red", xlab="Murder Rate", ylab="Burglary Rate")
+text(crime$murder, crime$burglary, crime$state, cex=0.5)
+
+#Histogram
+birth <- read.csv("http://datasets.flowingdata.com/birth-rate.csv")
+stem(birth$X2008)
+hist(birth$X2008,main = 'DISTRIBUTION OF BIRTH RATES',xlab = 'Births per 1,000 population',ylab = 'Country Count',col = 'purple',xlim=c(0,60))
+
+#Density Plot
+birth2008 <- birth$X2008[!is.na(birth$X2008)]
+d2008 <- density(birth2008)
+d2008frame <- data.frame(d2008$x, d2008$y)
+write.table(d2008frame, "birthdensity.txt", sep=",", row.names=FALSE)
+plot(d2008, type="n",main='DISTRIBUTION OF BIRTH RATES IN 2008',xlab = 'Live births per 1,000 population',ylab='Density')
+polygon(d2008, col="#821122", border="#cccccc")     
+
+# Multi Dimensional Plot
+install.packages('RColorBrewer')
+library(RColorBrewer)
+fname<-file.choose()
+fname
+sales<-read.csv(fname,header=T,stringsAsFactors = F)
+par(mfrow=c(1,2))
+par('mfrow')
+units.by.reg.year<-tapply(sales$units.sold,list(sales$rep.region,sales$year),FUN=sum)
+units.by.reg.year
+barplot(units.by.reg.year,beside=T,col=c('magenta','red','yellow','green','black'),ylim=c(0,10000),xlab = "Year",ylab = "Number of units sold",main="Number of units sold in different regions over the years")
+legend('topleft',legend=c("Central","East","North","South","West"),lwd=4,bty='n',col=c('blue','red','yellow','green','black'),cex=0.50)
+
+tname <- file.choose()
+tname
+tip = read.csv(tname, header=T, stringsAsFactors = F)
+tip2<-tapply(tip$X,list(tip$smoker,tip$sex),FUN=sum)
+tip2
+
+barplot(tip2,beside=T,col=c('Blue','Red'),ylab='Count of Gender',xlab='Sex', main='Smoking and Non-smoking Population based on Gender who tips')
+
+legend.text = c("Non-Smoker", "Smoker")
+legend("topleft", legend.text, pch = 19, col = c("Blue", "Red"), cex = 0.5)
