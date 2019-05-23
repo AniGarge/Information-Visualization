@@ -1,1 +1,1 @@
-# Information-Visualization
+Different plots for descriptive statistics 
